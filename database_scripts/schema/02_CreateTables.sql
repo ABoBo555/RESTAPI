@@ -1,0 +1,29 @@
+USE HR_DB;
+GO
+
+IF OBJECT_ID('dbo.Employee', 'U') IS NOT NULL
+BEGIN
+    DROP TABLE dbo.Employee;
+END
+GO
+
+CREATE TABLE dbo.Employee
+(
+    EmployeeID INT IDENTITY(1,1) PRIMARY KEY,
+
+    Name NVARCHAR(100) NOT NULL,
+
+    Age INT NOT NULL
+        CHECK (Age BETWEEN 18 AND 65),
+
+    Department NVARCHAR(100) NOT NULL,
+
+    CreatedAt DATETIME2 NOT NULL
+        DEFAULT SYSUTCDATETIME(),
+
+    UpdatedAt DATETIME2 NULL,
+
+    IsDeleted BIT NOT NULL
+        DEFAULT 0
+);
+GO
