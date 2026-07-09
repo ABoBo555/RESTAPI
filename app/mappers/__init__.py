@@ -1,5 +1,6 @@
-from .employee_mapper import map_employee
+from .employee_mappers import *
 
 __all__ = [
-    "map_employee",
+    "map_employee_detail",
+    "map_employee_summary",
 ]

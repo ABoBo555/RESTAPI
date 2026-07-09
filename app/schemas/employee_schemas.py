@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
 
-
 class EmployeeBase(BaseModel):
     name: str = Field(min_length=2, max_length=100)
     age: int = Field(gt=18, lt=65)
@@ -17,11 +16,13 @@ class EmployeeUpdate(EmployeeBase):
     pass
 
 
-class EmployeeResponse(EmployeeBase):
+class EmployeeSummary(EmployeeBase):
     id: int
+    
+
+class EmployeeDetail(EmployeeSummary):
     createdat: datetime
     updatedat: datetime | None = None
-
 
 class EmployeePatch(BaseModel):
     name: Optional[str] = Field(default=None, min_length=2, max_length=100)
@@ -29,8 +30,5 @@ class EmployeePatch(BaseModel):
     department: Optional[str] = Field(default=None, min_length=2, max_length=50)
 
 
-class CreateEmployeeResponse(BaseModel):
-    employee_id: int
-
-class MessageResponse(BaseModel):
-    message: str
+class EmployeeCreateResponse(BaseModel):
+    id: int

@@ -1,35 +1,17 @@
 from typing import Any
 
+from ..connection import get_connection
+
+from app.logging_config import logger
+
+from ..queries import *
+
+from app.schemas import *
+
 import pyodbc
 
-from app import config
 
-
-def get_connection() -> pyodbc.Connection:
-    """
-    Create and return a new SQL Server database connection.
-    """
-
-    connection_string = (
-        f"DRIVER={{{config.DB_DRIVER}}};"
-        f"SERVER={config.DB_SERVER};"
-        f"DATABASE={config.DB_DATABASE};"
-        f"Encrypt={config.DB_ENCRYPT};"
-        f"TrustServerCertificate={config.DB_TRUST_SERVER_CERTIFICATE};"
-    )
-
-    if config.DB_AUTH_MODE.lower() == "windows":
-        connection_string += "Trusted_Connection=yes;"
-    else:
-        connection_string += (
-            f"UID={config.DB_USERNAME};"
-            f"PWD={config.DB_PASSWORD};"
-        )
-
-    return pyodbc.connect(connection_string)
-
-
-def execute_fetch_all(
+def db_execute_fetch_all(
     sql: str,
     params: tuple[Any, ...] = (),
 ) -> list[pyodbc.Row]:
@@ -44,11 +26,19 @@ def execute_fetch_all(
             cursor.execute(sql, params)
             return cursor.fetchall()
 
+        except pyodbc.Error:
+            logger.exception(
+                "Database error executing execute_fetch_all SQL: %s | Params: %s",
+                sql,
+                params,
+            )
+            raise
+
         finally:
             cursor.close()
 
 
-def execute_fetch_one(
+def db_execute_fetch_one(
     sql: str,
     params: tuple[Any, ...] = (),
 ) -> pyodbc.Row | None:
@@ -63,24 +53,24 @@ def execute_fetch_one(
             cursor.execute(sql, params)
             return cursor.fetchone()
 
+        except pyodbc.Error:
+            logger.exception(
+                "Database error executing execute_fetch_one SQL: %s | Params: %s",
+                sql,
+                params,
+            )
+            raise
+
         finally:
             cursor.close()
 
 
-def execute_insert_update_delete(
+def db_execute_insert_update_delete(
     sql: str,
     params: tuple[Any, ...] = (),
 ) -> int:
     """
     Execute an INSERT, UPDATE or DELETE stored procedure.
-
-    IMPORTANT:
-    The stored procedure must return:
-
-        SELECT @@ROWCOUNT AS AffectedRows
-
-    Returns:
-        int: Number of affected rows.
     """
 
     with get_connection() as connection:
@@ -97,22 +87,25 @@ def execute_insert_update_delete(
 
         except pyodbc.Error:
             connection.rollback()
+
+            logger.exception(
+                "Database error executing execute_insert_update_delete SQL: %s | Params: %s",
+                sql,
+                params,
+            )
+
             raise
 
         finally:
             cursor.close()
 
 
-def execute_scalar(
+def db_execute_scalar(
     sql: str,
     params: tuple[Any, ...] = (),
 ) -> Any:
     """
     Execute a query that returns a single scalar value.
-
-    Examples:
-        - SELECT COUNT(*)
-        - SELECT SCOPE_IDENTITY()
     """
 
     with get_connection() as connection:
@@ -129,16 +122,16 @@ def execute_scalar(
 
         except pyodbc.Error:
             connection.rollback()
+
+            logger.exception(
+                "Database error executing execute_scalar SQL: %s | Params: %s",
+                sql,
+                params,
+            )
+
             raise
 
         finally:
             cursor.close()
 
 
-__all__ = [
-    "get_connection",
-    "execute_fetch_all",
-    "execute_fetch_one",
-    "execute_insert_update_delete",
-    "execute_scalar",
-]

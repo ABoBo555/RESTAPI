@@ -1,67 +1,56 @@
-from fastapi import (
-    FastAPI,
-    Request,
-    status,
-)
+from fastapi import FastAPI
 
-from fastapi.responses import JSONResponse
-
-from app.exceptions import *
-
-from app.routers import employee_router
-
+from app.exceptions import register_exception_handlers
+from app.routers import *
 from app.schemas import MessageResponse
+from app.config import APP_VERSION, APP_NAME
 
 tags_metadata = [
     {
+        "name": "Root",
+        "description": "Application status and information.",
+    },
+    {
         "name": "Employees",
-        "description": "Employee CRUD Operations",
+        "description": "Employee management operations.",
     },
 ]
 
-
 app = FastAPI(
-    title="Employee Management API",
-    description="REST API built with FastAPI and SQL Server.",
-    version="1.0.0",
+    title=APP_NAME,
+    description="""
+RESTful API for managing employee records.
+
+## Features
+
+- Employee CRUD Operations
+- SQL Server Stored Procedures
+- Layered Architecture
+- Global Exception Handling
+- Logging
+
+Built with **FastAPI**, **Pydantic**, **PyODBC**, and **Microsoft SQL Server**.
+""",
+    version=APP_VERSION,
     contact={
         "name": "Raj Kapoor",
         "email": "robbobroy224@gmail.com",
     },
     license_info={
-        "name": "MIT",
+        "name": "MIT License",
     },
     openapi_tags=tags_metadata,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
 )
 
 
-@app.exception_handler(EmployeeNotFoundError)
-async def employee_not_found_handler(
-    request: Request,
-    exc: EmployeeNotFoundError,
-):
-    return JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND,
-        content={
-            "detail": str(exc)
-        },
-    )
 
-
-@app.exception_handler(EmployeeCreationError)
-async def employee_creation_handler(
-    request: Request,
-    exc: EmployeeCreationError,
-):
-    return JSONResponse(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={
-            "detail": str(exc)
-        },
-    )
-
+register_exception_handlers(app)
 
 app.include_router(employee_router)
+app.include_router(health_router)
 
 
 @app.get(
@@ -69,9 +58,15 @@ app.include_router(employee_router)
     response_model=MessageResponse,
     tags=["Root"],
     summary="API Status",
+    description="Check whether the Employee Management API is running.",
 )
 def root():
+    """
+    Root endpoint.
+
+    Returns the current API status.
+    """
 
     return MessageResponse(
-        message="Employee Management API is running."
+        message=f"Employee Management API v{app.version} is running."
     )

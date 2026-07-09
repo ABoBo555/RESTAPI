@@ -1,8 +1,8 @@
 from fastapi import (
     APIRouter,
     Path,
-    Response,
     status,
+    Depends
 )
 
 from app.services.employee_service import *
@@ -18,21 +18,26 @@ router = APIRouter(
 
 @router.get(
     "/",
-    response_model=list[EmployeeResponse],
+    response_model=list[EmployeeSummary],
     status_code=status.HTTP_200_OK,
     summary="Get All Employees",
 )
-def get_employees():
+def get_employees(
+    query: EmployeeListQuery = Depends(),
+):
     """
-    Retrieve all active employees.
+    Retrieve employees.
+
+    Supports pagination, searching,
+    filtering and sorting.
     """
 
-    return get_all_employees()
+    return get_all_employees(query)
 
 
 @router.get(
     "/{employee_id}",
-    response_model=EmployeeResponse,
+    response_model=EmployeeDetail,
     status_code=status.HTTP_200_OK,
     summary="Get Employee By ID",
 )
@@ -52,7 +57,7 @@ def get_employee(
 
 @router.post(
     "/",
-    response_model=CreateEmployeeResponse,
+    response_model=EmployeeCreateResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Create Employee",
 )
@@ -65,8 +70,9 @@ def create_new_employee(
 
     employee_id = create_employee(employee)
 
-    return CreateEmployeeResponse(
-        employee_id=employee_id
+    return EmployeeCreateResponse(
+        id=employee_id,
+        message="Employee created successfully."
     )
 
 
@@ -92,8 +98,8 @@ def update_existing_employee(
         employee,
     )
 
-    return Response(
-        status_code=status.HTTP_204_NO_CONTENT
+    return MessageResponse(
+        message="Employee updated successfully."
     )
 
 
@@ -115,6 +121,6 @@ def delete_existing_employee(
 
     delete_employee(employee_id)
 
-    return Response(
-        status_code=status.HTTP_204_NO_CONTENT
+    return MessageResponse(
+        message="Employee deleted successfully."
     )
