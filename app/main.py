@@ -1,6 +1,6 @@
-from fastapi import FastAPI
+from fastapi import (FastAPI,)
 
-from app.exceptions import register_exception_handlers
+from app.exceptions import *
 from app.routers import *
 from app.schemas import MessageResponse
 from app.config import APP_VERSION, APP_NAME
@@ -70,3 +70,5 @@ def root():
     return MessageResponse(
         message=f"Employee Management API v{app.version} is running."
     )
+
+

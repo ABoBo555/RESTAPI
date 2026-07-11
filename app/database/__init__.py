@@ -10,6 +10,7 @@ __all__ = [
     "db_execute_scalar",
     "db_get_all_employees",
     "db_get_employee_by_id",
+    "db_get_employee_count",
     "db_create_employee",
     "db_update_employee",
     "db_delete_employee",    

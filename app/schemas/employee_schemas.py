@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
+from app.schemas.common_schemas import PaginationMetadata
 
 class EmployeeBase(BaseModel):
     name: str = Field(min_length=2, max_length=100)
@@ -32,3 +33,13 @@ class EmployeePatch(BaseModel):
 
 class EmployeeCreateResponse(BaseModel):
     id: int
+
+
+class EmployeeListResponse(BaseModel):
+    """
+    Paginated response containing employees.
+    """
+
+    data: list[EmployeeSummary]
+
+    pagination: PaginationMetadata

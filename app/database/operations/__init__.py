@@ -12,4 +12,5 @@ __all__ = [
     "db_create_employee",
     "db_update_employee",
     "db_delete_employee",
+    "db_get_employee_count"
 ]

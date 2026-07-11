@@ -96,3 +96,22 @@ def db_delete_employee(
         sql=DELETE_EMPLOYEE,
         params=(employee_id,),
     )
+
+
+def db_get_employee_count(
+    query: EmployeeListQuery,
+) -> int:
+    """
+    Retrieve the total number of employees
+    matching the query.
+    """
+
+    count = db_execute_scalar(
+        sql=GET_EMPLOYEE_COUNT,
+        params=(
+            query.search,
+            query.department,
+        ),
+    )
+
+    return int(count or 0)

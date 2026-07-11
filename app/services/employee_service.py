@@ -8,12 +8,13 @@ from app.mappers import *
 
 from app.schemas import *
 
+import math
 
 def get_all_employees(
     query: EmployeeListQuery,
-) -> list[EmployeeSummary]:
+) -> EmployeeListResponse:
     """
-    Retrieve employees.
+    Retrieve employees with pagination metadata.
     """
 
     logger.info(
@@ -24,15 +25,48 @@ def get_all_employees(
 
     rows = db_get_all_employees(query)
 
-    logger.info(
-        "Retrieved %s employee(s).",
-        len(rows),
+    total_records = db_get_employee_count(query)
+
+    total_pages = (
+        math.ceil(total_records / query.page_size)
+        if total_records > 0
+        else 1
     )
 
-    return [
+    if query.page > total_pages:
+
+        logger.warning(
+            "Requested page %s exceeds total pages %s.",
+            query.page,
+            total_pages,
+        )
+
+        raise InvalidPageError(
+            f"Requested page {query.page} exceeds "
+            f"the available {total_pages} page(s)."
+        )
+
+    employees = [
         map_employee_summary(row)
         for row in rows
     ]
+
+    pagination = PaginationMetadata.create(
+        page=query.page,
+        page_size=query.page_size,
+        total_records=total_records,
+    )
+
+    logger.info(
+        "Retrieved %s employee(s) out of %s total record(s).",
+        len(employees),
+        total_records,
+    )
+
+    return EmployeeListResponse(
+        data=employees,
+        pagination=pagination,
+    )
 
 
 def get_employee_by_id(

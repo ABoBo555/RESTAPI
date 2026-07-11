@@ -18,7 +18,7 @@ router = APIRouter(
 
 @router.get(
     "/",
-    response_model=list[EmployeeSummary],
+    response_model= EmployeeListResponse,
     status_code=status.HTTP_200_OK,
     summary="Get All Employees",
 )

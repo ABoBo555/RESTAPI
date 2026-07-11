@@ -6,4 +6,5 @@ __all__ = [
     "CREATE_EMPLOYEE",
     "UPDATE_EMPLOYEE",
     "DELETE_EMPLOYEE",
+    "GET_EMPLOYEE_COUNT"
 ]

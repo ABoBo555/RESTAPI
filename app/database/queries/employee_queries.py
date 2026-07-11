@@ -12,6 +12,12 @@ EXEC dbo.usp_GetEmployees
     @SortDirection=?
 """
 
+GET_EMPLOYEE_COUNT = """
+EXEC dbo.usp_GetEmployeeCount
+    @Search=?,
+    @Department=?
+"""
+
 GET_EMPLOYEE_BY_ID = """
 EXEC dbo.usp_GetEmployeeById
     @EmployeeID=?
