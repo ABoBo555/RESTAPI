@@ -7,6 +7,13 @@ from pydantic import (
     Field,
 )
 
+from app.config import (
+    DEFAULT_PAGE_SIZE,
+    MAX_PAGE_SIZE,
+)
+
+
+from enum import Enum
 
 class RegisterUserRequest(BaseModel):
     """
@@ -55,8 +62,21 @@ class RefreshTokenRequest(BaseModel):
 
     refresh_token: str
 
+class UserRole(str, Enum):
 
-class UserResponse(BaseModel):
+    EMPLOYEE = "Employee"
+
+    MANAGER = "Manager"
+
+    HR = "HR"
+
+    ADMIN = "Admin"
+
+    AUDITOR = "Auditor"
+
+
+
+class UserDetail(BaseModel):
     """
     Response model returned after retrieving a user.
     """
@@ -73,7 +93,7 @@ class UserResponse(BaseModel):
 
     email: EmailStr
 
-    role: str
+    role: UserRole
 
     is_active: bool
 
@@ -83,6 +103,25 @@ class UserResponse(BaseModel):
 
     updated_at: datetime | None
 
+class UserInformation(BaseModel):
+    """
+    Lightweight user information for list responses.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+
+    id: int = Field(alias="user_id")
+
+    username: str
+
+    email: EmailStr
+
+    role: UserRole
+
+    is_active: bool
+
 
 class RegisterUserResponse(BaseModel):
     """
@@ -91,7 +130,7 @@ class RegisterUserResponse(BaseModel):
 
     message: str
 
-    user: UserResponse
+    user: UserDetail
 
 
 class TokenResponse(BaseModel):
@@ -103,7 +142,7 @@ class TokenResponse(BaseModel):
 
     refresh_token: str
 
-    token_type: str = "Bearer"
+    token_type: str = "bearer"
 
     expires_in: int
 
@@ -119,3 +158,65 @@ class TokenPayload(BaseModel):
     role: str
 
     exp: int
+
+
+
+class CreateUserRequest(BaseModel):
+    """
+    Request model for administrators creating users.
+    """
+
+    username: str = Field(
+        min_length=3,
+        max_length=50,
+    )
+
+    email: EmailStr
+
+    password: str = Field(
+        min_length=8,
+        max_length=128,
+    )
+
+    role: UserRole
+
+
+class UserListResponse(BaseModel):
+    """
+    Paginated list of users.
+    """
+
+    total_records: int
+
+    page: int
+
+    page_size: int
+
+    users: list[UserInformation]
+
+
+class UserUpdate(BaseModel):
+    """
+    Request model for updating users.
+    """
+
+    username: str
+
+    email: EmailStr
+
+    role: UserRole
+
+    is_active: bool
+
+
+class UserListQuery(BaseModel):
+
+    page: int = Field(default=1, ge=1)
+
+    page_size: int = Field(default=DEFAULT_PAGE_SIZE, ge=1, le=MAX_PAGE_SIZE)
+
+    search: str | None = None
+
+    role: UserRole | None = None
+
+    is_active: bool | None = None

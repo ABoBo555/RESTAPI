@@ -1,48 +1,50 @@
 """
 SQL queries and stored procedure calls
-for Authentication/User operations.
+for user management.
 """
 
-# ---------------------------------------------------------
-# Register User
-# ---------------------------------------------------------
+# -----------------------------
+# User Management
+# -----------------------------
 
-SQL_REGISTER_USER = """
-EXEC dbo.usp_RegisterUser
-    @Username=?,
-    @Email=?,
-    @PasswordHash=?,
-    @Role=?
+SQL_GET_USERS = """
+EXEC dbo.usp_GetUsers
+    @Page = ?,
+    @PageSize = ?,
+    @Search = ?,
+    @Role = ?,
+    @IsActive = ?;
 """
 
-
-# ---------------------------------------------------------
-# Get User By Username
-# ---------------------------------------------------------
-
-SQL_GET_USER_BY_USERNAME = """
-EXEC dbo.usp_GetUserByUsername
-    @Username=?
+SQL_GET_USER_BY_ID = """
+EXEC dbo.usp_GetUserById
+    @UserID = ?;
 """
 
-
-# ---------------------------------------------------------
-# Get User By Email
-# ---------------------------------------------------------
-
-SQL_GET_USER_BY_EMAIL = """
-EXEC dbo.usp_GetUserByEmail
-    @Email=?
+SQL_CREATE_USER = """
+EXEC dbo.usp_CreateUser
+    @Username = ?,
+    @Email = ?,
+    @PasswordHash = ?,
+    @Role = ?;
 """
 
-
-# ---------------------------------------------------------
-# Update Last Login
-# ---------------------------------------------------------
-
-SQL_UPDATE_LAST_LOGIN = """
-EXEC dbo.usp_UpdateLastLogin
-    @UserID=?
+SQL_UPDATE_USER = """
+EXEC dbo.usp_UpdateUser
+    @UserID = ?,
+    @Username = ?,
+    @Email = ?,
+    @Role = ?,
+    @IsActive = ?;
 """
 
+SQL_DELETE_USER = """
+EXEC dbo.usp_DeleteUser
+    @UserID = ?;
+"""
 
+SQL_CHANGE_PASSWORD = """
+EXEC dbo.usp_ChangePassword
+    @UserID = ?,
+    @PasswordHash = ?;
+"""

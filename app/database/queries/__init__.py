@@ -1,5 +1,7 @@
 from .employee_queries import *
 from .user_queries import *
+from .authentication_queries import *
+
 
 
 __all__ = [
@@ -9,8 +11,14 @@ __all__ = [
     "UPDATE_EMPLOYEE",
     "DELETE_EMPLOYEE",
     "GET_EMPLOYEE_COUNT",
-    "SQL_REGISTER_USER",
+    "SQL_GET_USERS",
+    "SQL_GET_USER_BY_ID",
+    "SQL_CREATE_USER",
+    "SQL_UPDATE_USER",
+    "SQL_DELETE_USER",
+    "SQL_CHANGE_PASSWORD",
     "SQL_GET_USER_BY_USERNAME",
     "SQL_GET_USER_BY_EMAIL",
+    "SQL_REGISTER_USER",
     "SQL_UPDATE_LAST_LOGIN",
 ]

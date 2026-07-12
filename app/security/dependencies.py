@@ -15,14 +15,39 @@ from app.security import (
     decode_token,
 )
 
+from collections.abc import Callable
+
 from app.schemas.user_schemas import (
     TokenPayload,
 )
 
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/auth/login",
+    tokenUrl="auth/login",
 )
+
+
+def require_roles(
+    *roles: str,
+) -> Callable:
+    """
+    Require one of the specified roles.
+    """
+
+    def role_checker(
+        current_user: TokenPayload = Depends(
+            get_current_active_user,
+        ),
+    ) -> TokenPayload:
+
+        if current_user.role not in roles:
+            raise PermissionDeniedError(
+                "You do not have permission to perform this action."
+            )
+
+        return current_user
+
+    return role_checker
 
 
 def get_current_user(

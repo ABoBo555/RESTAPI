@@ -33,3 +33,9 @@ class PermissionDeniedError(Exception):
     permission to perform the requested operation.
     """
     pass
+
+class UserNotFoundError(Exception):
+    """
+    Raised when the requested user does not exist.
+    """
+    pass

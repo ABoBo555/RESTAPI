@@ -15,6 +15,6 @@ __all__ = [
     "verify_token",
     "get_current_user",
     "get_current_active_user",
-    "require_role",
+    "require_roles",
 
 ]

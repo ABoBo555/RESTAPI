@@ -14,8 +14,14 @@ __all__ = [
     "db_update_employee",
     "db_delete_employee",
     "db_get_employee_count",
-    "db_register_user",
+    "db_create_user",
+    "db_get_users",
+    "db_get_user_by_id",
     "db_get_user_by_username",
     "db_get_user_by_email",
     "db_update_last_login",
+    "db_update_user",
+    "db_delete_user",
+    "db_change_password",
+    "db_update_last_login"
 ]

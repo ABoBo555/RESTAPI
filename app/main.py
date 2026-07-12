@@ -52,6 +52,7 @@ register_exception_handlers(app)
 app.include_router(employee_router)
 app.include_router(authentication_router)
 app.include_router(health_router)
+app.include_router(user_router)
 
 
 

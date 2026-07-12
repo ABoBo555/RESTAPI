@@ -7,7 +7,6 @@ from pydantic import (
 from app.database.operations.user_operations import (
     db_get_user_by_email,
     db_get_user_by_username,
-    db_register_user,
     db_update_last_login,
 )
 
@@ -38,6 +37,8 @@ from app.security import (
 
 from app.config import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
+    ADMIN_ROLE,
+    EMPLOYEE_ROLE,
 )
 
 
@@ -56,76 +57,6 @@ def _is_email(value: str) -> bool:
     except ValidationError:
         return False
 
-
-def register_user(
-    request: RegisterUserRequest,
-) -> RegisterUserResponse:
-    """
-    Register a new user.
-    """
-
-    username = request.username.strip()
-    email = request.email.strip().lower()
-
-    logger.info(
-        "Registering user '%s'.",
-        username,
-    )
-
-    if db_get_user_by_username(username):
-        logger.warning(
-            "Username '%s' already exists.",
-            username,
-        )
-
-        raise UserAlreadyExistsError(
-            "Username already exists."
-        )
-
-    if db_get_user_by_email(email):
-        logger.warning(
-            "Email '%s' already exists.",
-            email,
-        )
-
-        raise UserAlreadyExistsError(
-            "Email already exists."
-        )
-
-    password_hash = hash_password(
-        request.password,
-    )
-
-    user_id = db_register_user(
-        username=username,
-        email=email,
-        password_hash=password_hash,
-        role="Employee",
-    )
-
-    if user_id is None:
-        logger.error(
-            "Failed to register user '%s'.",
-            username,
-        )
-
-        raise AuthenticationError(
-            "Failed to register user."
-        )
-
-    row = db_get_user_by_username(
-        username,
-    )
-
-    logger.info(
-        "User '%s' registered successfully.",
-        username,
-    )
-
-    return RegisterUserResponse(
-        message="User registered successfully.",
-        user=map_user_response(row),
-    )
 
 
 def login_user(

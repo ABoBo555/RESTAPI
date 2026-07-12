@@ -1,5 +1,6 @@
 from fastapi import (
     APIRouter,
+    Depends,
     status,
 )
 
@@ -10,9 +11,17 @@ from app.schemas.user_schemas import (
     TokenResponse,
 )
 
+from app.services.user_service import (
+    register_user,
+)
+
 from app.services.authentication_service import (
     login_user,
-    register_user,
+)
+
+
+from fastapi.security import (
+    OAuth2PasswordRequestForm,
 )
 
 
@@ -45,10 +54,15 @@ def register(
     summary="Login",
 )
 def login(
-    request: LoginRequest,
+    form_data: OAuth2PasswordRequestForm = Depends(),
 ):
     """
     Authenticate a user.
     """
+
+    request = LoginRequest(
+        login=form_data.username,
+        password=form_data.password,
+    )
 
     return login_user(request)

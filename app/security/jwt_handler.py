@@ -12,6 +12,10 @@ from jose import (
 
 from app import config
 
+from app.schemas.user_schemas import (
+    TokenPayload,
+)
+
 
 def _create_token(
     data: dict[str, Any],
@@ -95,3 +99,23 @@ def verify_token(
 
     except JWTError:
         return False
+    
+
+def decode_token(
+    token: str,
+) -> TokenPayload:
+    """
+    Decode a JWT and return the payload.
+    """
+
+    payload = jwt.decode(
+        token,
+        config.JWT_SECRET_KEY,
+        algorithms=[
+            config.JWT_ALGORITHM,
+        ],
+    )
+
+    return TokenPayload.model_validate(
+        payload,
+    )

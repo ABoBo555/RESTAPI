@@ -1,3 +1,5 @@
+import pyodbc
+
 from app.database.operations.db_operations import (
     db_execute_fetch_all,
     db_execute_fetch_one,
@@ -5,33 +7,25 @@ from app.database.operations.db_operations import (
     db_execute_scalar,
 )
 
-
-from app.database.queries.user_queries import (
-    SQL_GET_USER_BY_EMAIL,
-    SQL_GET_USER_BY_USERNAME,
-    SQL_REGISTER_USER,
-    SQL_UPDATE_LAST_LOGIN,
-)
-
-import pyodbc
+from app.database.queries import *
 
 
 
-def db_register_user(
+def db_create_user(
     username: str,
     email: str,
     password_hash: str,
     role: str,
 ) -> int | None:
     """
-    Register a new user.
+    Create a new user.
 
     Returns:
-        Newly created User ID.
+        Newly created UserID.
     """
 
     return db_execute_scalar(
-        sql=SQL_REGISTER_USER,
+        sql=SQL_CREATE_USER,
         params=(
             username,
             email,
@@ -41,9 +35,45 @@ def db_register_user(
     )
 
 
+def db_get_users(
+    page: int,
+    page_size: int,
+    search: str | None,
+    role: str | None,
+    is_active: bool | None,
+) -> list[pyodbc.Row]:
+    """
+    Retrieve all users with pagination.
+    """
+
+    return db_execute_fetch_all(
+        sql=SQL_GET_USERS,
+        params=(
+            page,
+            page_size,
+            search,
+            role,
+            is_active,
+        ),
+    )
+
+
+def db_get_user_by_id(
+    user_id: int,
+) -> pyodbc.Row | None:
+    """
+    Retrieve a user by ID.
+    """
+
+    return db_execute_fetch_one(
+        sql=SQL_GET_USER_BY_ID,
+        params=(user_id,),
+    )
+
+
 def db_get_user_by_username(
     username: str,
-)-> pyodbc.Row | None:
+) -> pyodbc.Row | None:
     """
     Retrieve a user by username.
     """
@@ -56,7 +86,7 @@ def db_get_user_by_username(
 
 def db_get_user_by_email(
     email: str,
-)-> pyodbc.Row | None:
+) -> pyodbc.Row | None:
     """
     Retrieve a user by email.
     """
@@ -67,15 +97,79 @@ def db_get_user_by_email(
     )
 
 
+def db_update_user(
+    user_id: int,
+    username: str,
+    email: str,
+    role: str,
+    is_active: bool,
+) -> int:
+    """
+    Update user information.
+
+    Returns:
+        Number of affected rows.
+    """
+
+    return db_execute_insert_update_delete(
+        sql=SQL_UPDATE_USER,
+        params=(
+            user_id,
+            username,
+            email,
+            role,
+            is_active,
+        ),
+    )
+
+
+def db_delete_user(
+    user_id: int,
+) -> int:
+    """
+    Soft delete a user.
+
+    Returns:
+        Number of affected rows.
+    """
+
+    return db_execute_insert_update_delete(
+        sql=SQL_DELETE_USER,
+        params=(user_id,),
+    )
+
+
+def db_change_password(
+    user_id: int,
+    password_hash: str,
+) -> int:
+    """
+    Change a user's password.
+
+    Returns:
+        Number of affected rows.
+    """
+
+    return db_execute_insert_update_delete(
+        sql=SQL_CHANGE_PASSWORD,
+        params=(
+            user_id,
+            password_hash,
+        ),
+    )
+
+
 def db_update_last_login(
     user_id: int,
 ) -> int:
     """
-    Update user's last login timestamp.
+    Update the user's last login timestamp.
+
+    Returns:
+        Number of affected rows.
     """
 
     return db_execute_insert_update_delete(
         sql=SQL_UPDATE_LAST_LOGIN,
         params=(user_id,),
     )
-

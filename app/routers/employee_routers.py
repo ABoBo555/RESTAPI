@@ -1,24 +1,48 @@
 from fastapi import (
     APIRouter,
+    Depends,
     Path,
     status,
-    Depends
 )
 
-from app.services.employee_service import *
+from app.config import *
 
-from app.schemas import *
-from app.exceptions import *
+from app.schemas import (
+    EmployeeCreate,
+    EmployeeCreateResponse,
+    EmployeeDetail,
+    EmployeeListQuery,
+    EmployeeListResponse,
+    EmployeeUpdate,
+    MessageResponse,
+)
+
+from app.security import (
+    get_current_user,
+    require_roles,
+)
+
+from app.services.employee_service import (
+    create_employee,
+    delete_employee,
+    get_all_employees,
+    get_employee_by_id,
+    update_employee,
+)
+
 
 router = APIRouter(
     prefix="/employees",
     tags=["Employees"],
+    dependencies=[
+        Depends(get_current_user),
+    ],
 )
 
 
 @router.get(
     "/",
-    response_model= EmployeeListResponse,
+    response_model=EmployeeListResponse,
     status_code=status.HTTP_200_OK,
     summary="Get All Employees",
 )
@@ -29,7 +53,7 @@ def get_employees(
     Retrieve employees.
 
     Supports pagination, searching,
-    filtering and sorting.
+    filtering, and sorting.
     """
 
     return get_all_employees(query)
@@ -72,13 +96,14 @@ def create_new_employee(
 
     return EmployeeCreateResponse(
         id=employee_id,
-        message="Employee created successfully."
+        message="Employee created successfully.",
     )
 
 
 @router.put(
     "/{employee_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=MessageResponse,
+    status_code=status.HTTP_200_OK,
     summary="Update Employee",
 )
 def update_existing_employee(
@@ -99,14 +124,21 @@ def update_existing_employee(
     )
 
     return MessageResponse(
-        message="Employee updated successfully."
+        message="Employee updated successfully.",
     )
 
 
 @router.delete(
     "/{employee_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=MessageResponse,
+    status_code=status.HTTP_200_OK,
     summary="Delete Employee",
+    dependencies=[
+        Depends(require_roles(
+            ADMIN_ROLE,
+            MANAGER_ROLE,
+        )),
+    ],
 )
 def delete_existing_employee(
     employee_id: int = Path(
@@ -117,10 +149,12 @@ def delete_existing_employee(
 ):
     """
     Soft delete an employee.
+
+    Requires the Admin role.
     """
 
     delete_employee(employee_id)
 
     return MessageResponse(
-        message="Employee deleted successfully."
+        message="Employee deleted successfully.",
     )
