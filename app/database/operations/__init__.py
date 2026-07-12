@@ -1,5 +1,6 @@
 from .employee_operations import *
 from .db_operations import *
+from .user_operations import *
 
 
 __all__ = [
@@ -12,5 +13,9 @@ __all__ = [
     "db_create_employee",
     "db_update_employee",
     "db_delete_employee",
-    "db_get_employee_count"
+    "db_get_employee_count",
+    "db_register_user",
+    "db_get_user_by_username",
+    "db_get_user_by_email",
+    "db_update_last_login",
 ]

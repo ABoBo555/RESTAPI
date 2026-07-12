@@ -7,5 +7,9 @@ __all__ = [
     "EmployeeCreationError",
     "EmployeeNotFoundError",
     "InvalidPageError",
+    "AuthenticationError",
+    "UserAlreadyExistsError",
+    "InvalidTokenError",
+    "PermissionDeniedError",
 ]
 

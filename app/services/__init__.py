@@ -8,4 +8,6 @@ __all__ = [
     "update_employee",
     "delete_employee",
     "get_health",
+    "register_user",
+    "login_user",
 ]

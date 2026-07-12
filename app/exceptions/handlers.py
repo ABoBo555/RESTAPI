@@ -13,6 +13,10 @@ from .employee_exceptions import (
 )
 from .custom_exceptions import (
     InvalidPageError,
+    AuthenticationError,
+    UserAlreadyExistsError,
+    InvalidTokenError,
+    PermissionDeniedError,
 )
 
 
@@ -65,6 +69,61 @@ def register_exception_handlers(app: FastAPI) -> None:
     ):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "detail": str(exc),
+            },
+        )
+    
+
+    @app.exception_handler(AuthenticationError)
+    async def authentication_error_handler(
+        request: Request,
+        exc: AuthenticationError,
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={
+                "detail": str(exc),
+            },
+        )
+
+
+    @app.exception_handler(UserAlreadyExistsError)
+    async def user_already_exists_handler(
+        request: Request,
+        exc: UserAlreadyExistsError,
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={
+                "detail": str(exc),
+            },
+        )
+    
+
+    @app.exception_handler(InvalidTokenError)
+    async def invalid_token_handler(
+        request: Request,
+        exc: InvalidTokenError,
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={
+                "detail": str(exc),
+            },
+            headers={
+                "WWW-Authenticate": "Bearer",
+            },
+        )
+
+
+    @app.exception_handler(PermissionDeniedError)
+    async def permission_denied_handler(
+        request: Request,
+        exc: PermissionDeniedError,
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
             content={
                 "detail": str(exc),
             },

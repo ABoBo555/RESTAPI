@@ -50,7 +50,9 @@ Built with **FastAPI**, **Pydantic**, **PyODBC**, and **Microsoft SQL Server**.
 register_exception_handlers(app)
 
 app.include_router(employee_router)
+app.include_router(authentication_router)
 app.include_router(health_router)
+
 
 
 @app.get(
