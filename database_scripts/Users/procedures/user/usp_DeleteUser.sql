@@ -7,10 +7,12 @@ CREATE OR ALTER PROCEDURE dbo.usp_DeleteUser
 )
 AS
 BEGIN
+
     SET NOCOUNT ON;
 
     UPDATE dbo.Users
     SET
+        IsActive = 0,
         IsDeleted = 1,
         UpdatedAt = GETDATE()
     WHERE
@@ -18,5 +20,6 @@ BEGIN
         AND IsDeleted = 0;
 
     SELECT @@ROWCOUNT AS AffectedRows;
+
 END;
 GO

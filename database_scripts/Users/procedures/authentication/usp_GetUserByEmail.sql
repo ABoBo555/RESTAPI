@@ -27,6 +27,7 @@ BEGIN
     WHERE
 
         Email = @Email
+        AND IsDeleted = 0
         AND IsActive = 1;
 
 END;

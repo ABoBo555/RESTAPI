@@ -266,8 +266,6 @@ def delete_user(
 
     affected = db_delete_user(user_id)
 
-    affected = db_update_user(...)
-
     _ensure_rows_affected(
         affected,
         user_id,
