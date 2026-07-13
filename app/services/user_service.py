@@ -1,4 +1,4 @@
-from app.config import (
+from app.constants import (
     EMPLOYEE_ROLE,
 )
 
@@ -10,11 +10,14 @@ from app.database.operations.user_operations import (
     db_get_user_by_username,
     db_get_users,
     db_update_user,
+    db_change_password,
+    db_get_user_credentials,
 )
 
 from app.exceptions import (
     UserAlreadyExistsError,
     UserNotFoundError,
+    InvalidPasswordError,
 )
 
 from app.mappers import *
@@ -27,10 +30,13 @@ from app.schemas.user_schemas import (
     UserListQuery,
     UserListResponse,
     UserUpdate,
+    ChangePasswordRequest,
 )
 
 from app.security import (
     hash_password,
+    verify_password,
+    validate_password_strength,
 )
 
 
@@ -76,7 +82,9 @@ def _create_user(
         email=email,
     )
 
-    password_hash = hash_password(password)
+    validate_password_strength(password,)
+
+    password_hash = hash_password(password,)
 
     user_id = db_create_user(
         username=username,
@@ -226,6 +234,20 @@ def get_user_by_id(
 
 
 # ==========================================================
+# Get Current User Profile
+# ==========================================================
+def get_current_user_profile(
+    user_id: int,
+) -> UserDetail:
+    """
+    Retrieve the currently authenticated user's profile.
+    """
+
+    row = _get_existing_user(user_id)
+
+    return map_user(row)
+
+# ==========================================================
 # Update User
 # ==========================================================
 
@@ -251,6 +273,7 @@ def update_user(
         affected,
         user_id,
     )
+
 # ==========================================================
 # Delete User
 # ==========================================================
@@ -265,6 +288,60 @@ def delete_user(
     _get_existing_user(user_id)
 
     affected = db_delete_user(user_id)
+
+    _ensure_rows_affected(
+        affected,
+        user_id,
+    )
+
+
+# ==========================================================
+# Delete User
+# ==========================================================
+
+
+def change_password(
+    user_id: int,
+    request: ChangePasswordRequest,
+) -> None:
+    """
+    Change the password for the current user.
+    """
+
+    credentials = db_get_user_credentials(
+        user_id,
+    )
+
+    if credentials is None:
+        raise UserNotFoundError(
+            f"User ID {user_id} not found."
+        )
+
+    if not verify_password(
+        request.current_password,
+        credentials.PasswordHash,
+    ):
+        raise InvalidPasswordError(
+            "Current password is incorrect."
+        )
+
+    if request.current_password == request.new_password:
+        raise InvalidPasswordError(
+            "New password must be different."
+        )
+
+    validate_password_strength(
+        request.new_password,
+    )
+
+    password_hash = hash_password(
+        request.new_password,
+    )
+
+    affected = db_change_password(
+        user_id=user_id,
+        password_hash=password_hash,
+    )
 
     _ensure_rows_affected(
         affected,

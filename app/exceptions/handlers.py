@@ -6,19 +6,8 @@ from fastapi import (
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
-from .employee_exceptions import (
-    EmployeeError,
-    EmployeeCreationError,
-    EmployeeNotFoundError,
-)
-from .custom_exceptions import (
-    InvalidPageError,
-    AuthenticationError,
-    UserAlreadyExistsError,
-    InvalidTokenError,
-    PermissionDeniedError,
-    UserNotFoundError,
-)
+from .employee_exceptions import *
+from .custom_exceptions import *
 
 
 
@@ -137,6 +126,19 @@ def register_exception_handlers(app: FastAPI) -> None:
     ):
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
+            content={
+                "detail": str(exc),
+            },
+        )
+    
+
+    @app.exception_handler(InvalidPasswordError)
+    async def invalid_password_handler(
+        request,
+        exc,
+    ):
+        return JSONResponse(
+            status_code=400,
             content={
                 "detail": str(exc),
             },

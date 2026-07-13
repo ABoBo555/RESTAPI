@@ -35,7 +35,7 @@ from app.security import (
     verify_password,
 )
 
-from app.config import (
+from app.constants import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     ADMIN_ROLE,
     EMPLOYEE_ROLE,
@@ -112,18 +112,16 @@ def login_user(
         row.UserID,
     )
 
-    payload = {
-        "sub": row.Username,
-        "user_id": row.UserID,
-        "role": row.Role,
-    }
-
     access_token = create_access_token(
-        payload,
+        user_id=row.UserID,
+        username=row.Username,
+        role=row.Role,
     )
 
     refresh_token = create_refresh_token(
-        payload,
+        user_id=row.UserID,
+        username=row.Username,
+        role=row.Role,
     )
 
     logger.info(
@@ -137,5 +135,3 @@ def login_user(
         token_type="Bearer",
         expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
-
-

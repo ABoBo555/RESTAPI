@@ -11,8 +11,8 @@ tags_metadata = [
         "description": "Application status and information.",
     },
     {
-        "name": "Employees",
-        "description": "Employee management operations.",
+        "name": "A RESTAPI project for managing employee records.",
+        "description": "User & Employee management operations.",
     },
 ]
 

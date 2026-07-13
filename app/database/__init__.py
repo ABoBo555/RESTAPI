@@ -24,7 +24,7 @@ __all__ = [
     "db_delete_user",
     "db_change_password",
     "db_update_last_login",   
-
+    "db_get_user_credentials",
     "GET_ALL_EMPLOYEES",
     "GET_EMPLOYEE_BY_ID",
     "CREATE_EMPLOYEE",

@@ -39,3 +39,9 @@ class UserNotFoundError(Exception):
     Raised when the requested user does not exist.
     """
     pass
+
+class InvalidPasswordError(Exception):
+    """
+    Raised when a password validation fails.
+    """
+    pass

@@ -173,3 +173,18 @@ def db_update_last_login(
         sql=SQL_UPDATE_LAST_LOGIN,
         params=(user_id,),
     )
+
+
+def db_get_user_credentials(
+    user_id: int,
+):
+    """
+    Retrieve authentication credentials for a user.
+    """
+
+    return db_execute_fetch_one(
+        sql=SQL_GET_USER_CREDENTIALS,
+        params=(
+            user_id,
+        ),
+    )

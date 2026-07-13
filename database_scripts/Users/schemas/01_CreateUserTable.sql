@@ -25,6 +25,10 @@ CREATE TABLE dbo.Users
         CONSTRAINT DF_Users_IsActive
         DEFAULT (1),
 
+    IsDeleted BIT NOT NULL
+        CONSTRAINT DF_Users_IsDeleted
+        DEFAULT (0),
+
     LastLoginAt DATETIME2 NULL,
 
     CreatedAt DATETIME2 NOT NULL
@@ -55,7 +59,9 @@ CHECK
     (
         'Admin',
         'Manager',
-        'Employee'
+        'Employee',
+        'HR',
+        'Auditor'
     )
 );
 GO

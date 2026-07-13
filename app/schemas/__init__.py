@@ -19,6 +19,7 @@ __all__ = [
     "EmployeePatch",    
     "EmployeeListQuery",
     "EmployeeListResponse",
+    "EmployeeCreateResponse",
     "EmployeeSortField",
     "SortDirection",
     "RegisterUserRequest",
@@ -31,5 +32,9 @@ __all__ = [
     "UserInformation",
     "CreateUserRequest",
     "RefreshTokenRequest",
+    "UserListQuery",
+    "UserListResponse",
+    "UserUpdate",
+    "ChangePasswordRequest",
 
 ]

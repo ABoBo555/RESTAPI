@@ -24,3 +24,8 @@ SQL_UPDATE_LAST_LOGIN = """
 EXEC dbo.usp_UpdateLastLogin
     @UserID = ?;
 """
+
+SQL_GET_USER_CREDENTIALS = """
+EXEC dbo.usp_GetUserCredentials
+    @UserID=?;
+"""

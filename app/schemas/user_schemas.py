@@ -7,11 +7,9 @@ from pydantic import (
     Field,
 )
 
-from app.config import (
-    DEFAULT_PAGE_SIZE,
+from app.constants import (DEFAULT_PAGE_SIZE,
     MAX_PAGE_SIZE,
 )
-
 
 from enum import Enum
 
@@ -148,14 +146,18 @@ class TokenResponse(BaseModel):
 
 class TokenPayload(BaseModel):
     """
-    JWT payload extracted from an access token.
+    JWT payload extracted from a token.
     """
+
+    jti: str
 
     sub: str
 
     user_id: int
 
     role: str
+
+    type: str
 
     exp: int
 
@@ -220,3 +222,19 @@ class UserListQuery(BaseModel):
     role: UserRole | None = None
 
     is_active: bool | None = None
+
+
+class ChangePasswordRequest(BaseModel):
+    """
+    Request model for changing a password.
+    """
+
+    current_password: str = Field(
+        min_length=8,
+        max_length=128,
+    )
+
+    new_password: str = Field(
+        min_length=8,
+        max_length=128,
+    )

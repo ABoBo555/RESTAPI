@@ -23,5 +23,6 @@ __all__ = [
     "db_update_user",
     "db_delete_user",
     "db_change_password",
-    "db_update_last_login"
+    "db_update_last_login",
+    "db_get_user_credentials"
 ]

@@ -1,5 +1,12 @@
 from passlib.context import CryptContext
 
+import re
+
+from app.exceptions import (
+    InvalidPasswordError,
+)
+
+
 
 # Password hashing configuration
 _password_context = CryptContext(
@@ -43,3 +50,58 @@ def verify_password(
         plain_password,
         hashed_password,
     )
+
+
+def validate_password_strength(
+    password: str,
+) -> None:
+    """
+    Validate password strength.
+
+    Rules:
+        - Minimum 8 characters
+        - At least one uppercase letter
+        - At least one lowercase letter
+        - At least one digit
+        - At least one special character
+    """
+
+    if len(password) < 8:
+        raise InvalidPasswordError(
+            "Password must contain at least 8 characters."
+        )
+
+    if not re.search(r"[A-Z]", password):
+        raise InvalidPasswordError(
+            "Password must contain at least one uppercase letter."
+        )
+
+    if not re.search(r"[a-z]", password):
+        raise InvalidPasswordError(
+            "Password must contain at least one lowercase letter."
+        )
+
+    if not re.search(r"\d", password):
+        raise InvalidPasswordError(
+            "Password must contain at least one digit."
+        )
+
+    if not re.search(r"[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>/?]", password):
+        raise InvalidPasswordError(
+            "Password must contain at least one special character."
+        )
+
+    common_passwords = {
+        "password",
+        "password123",
+        "admin123",
+        "admin123!",
+        "12345678",
+        "qwerty123",
+        "welcome123",
+    }
+
+    if password.lower() in common_passwords:
+        raise InvalidPasswordError(
+            "Password is too common. Please choose a stronger password."
+        )

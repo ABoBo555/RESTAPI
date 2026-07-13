@@ -21,4 +21,6 @@ __all__ = [
     "SQL_GET_USER_BY_EMAIL",
     "SQL_REGISTER_USER",
     "SQL_UPDATE_LAST_LOGIN",
+    "SQL_GET_USER_CREDENTIALS",
+
 ]

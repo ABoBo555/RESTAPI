@@ -10,12 +10,13 @@ from jose import (
     jwt,
 )
 
-from app import config
+from app.constants import *
 
 from app.schemas.user_schemas import (
     TokenPayload,
 )
 
+from uuid import uuid4
 
 def _create_token(
     data: dict[str, Any],
@@ -33,56 +34,53 @@ def _create_token(
 
     return jwt.encode(
         payload,
-        config.JWT_SECRET_KEY,
-        algorithm=config.JWT_ALGORITHM,
+        JWT_SECRET_KEY,
+        algorithm=JWT_ALGORITHM,
     )
 
 
 def create_access_token(
-    data: dict[str, Any],
+    user_id: int,
+    username: str,
+    role: str,
 ) -> str:
     """
-    Create an access token.
+    Create a signed JWT access token.
     """
 
     return _create_token(
-        data=data,
+        data={
+            "jti": str(uuid4()),
+            "sub": username,
+            "user_id": user_id,
+            "role": role,
+            "type": "access",
+        },
         expires_delta=timedelta(
-            minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES,
+            minutes=ACCESS_TOKEN_EXPIRE_MINUTES,
         ),
     )
-
 
 def create_refresh_token(
-    data: dict[str, Any],
+    user_id: int,
+    username: str,
+    role: str,
 ) -> str:
     """
-    Create a refresh token.
+    Create a signed JWT refresh token.
     """
 
     return _create_token(
-        data=data,
+        data={
+            "jti": str(uuid4()),
+            "sub": username,
+            "user_id": user_id,
+            "role": role,
+            "type": "refresh",
+        },
         expires_delta=timedelta(
-            days=config.REFRESH_TOKEN_EXPIRE_DAYS,
+            days=REFRESH_TOKEN_EXPIRE_DAYS,
         ),
-    )
-
-
-def decode_token(
-    token: str,
-) -> dict[str, Any]:
-    """
-    Decode a JWT token.
-
-    Raises:
-        JWTError:
-            If the token is invalid.
-    """
-
-    return jwt.decode(
-        token,
-        config.JWT_SECRET_KEY,
-        algorithms=[config.JWT_ALGORITHM],
     )
 
 
@@ -97,7 +95,7 @@ def verify_token(
         decode_token(token)
         return True
 
-    except JWTError:
+    except Exception:
         return False
     
 
@@ -110,9 +108,9 @@ def decode_token(
 
     payload = jwt.decode(
         token,
-        config.JWT_SECRET_KEY,
+        JWT_SECRET_KEY,
         algorithms=[
-            config.JWT_ALGORITHM,
+            JWT_ALGORITHM,
         ],
     )
 
